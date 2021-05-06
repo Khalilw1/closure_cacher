@@ -1,9 +1,13 @@
 [package]
 name = "closure_cacher"
 description = "Allows caching of user specified closure."
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Mohammed Khalil Ait Brahim <mohammed.khalil.ab@gmail.com>"]
 edition = "2018"
 license = "MIT"
+readme = "README.md"
+keywords = ["cache", "closure"]
+repository = "https://github.com/khalilw1/closure_cacher"
+documentation = "https://docs.rs/closure_cacher"
 
 [dependencies]
