@@ -1,10 +1,10 @@
 //! Closure Cacher abstracts memoization on provided closure by storing
 //! its data in a hashmap and returning references to its output
-use std::collections::HashMap;
 use std::cmp::Eq;
+use std::collections::HashMap;
 use std::hash::Hash;
 
-/// Cacher Struct that allows provision of a closure and 
+/// Cacher Struct that allows provision of a closure and
 /// memoizes its output
 /// # Examples
 /// ```
@@ -13,32 +13,33 @@ use std::hash::Hash;
 /// assert_eq!(cacher.get(&1), &2);
 /// ```
 pub struct Cacher<I, O, T>
-where 
+where
     T: Fn(I) -> O,
 {
     calc: T,
-    cache: HashMap<I, O>
+    cache: HashMap<I, O>,
 }
 
-impl<I: Eq + Hash + Copy, O, T> Cacher<I, O, T> 
+impl<I: Eq + Hash + Copy, O, T> Cacher<I, O, T>
 where
-    T: Fn(I) -> O
+    T: Fn(I) -> O,
 {
     /// Creates new Cacher instance
     pub fn new(calc: T) -> Cacher<I, O, T> {
         Cacher {
             calc,
-            cache: HashMap::new()
+            cache: HashMap::new(),
         }
     }
 
     /// Get reference value by applying the cacher provided closure
     pub fn get(&mut self, n: &I) -> &O {
-        self.cache.entry(*n).or_insert((self.calc)(*n))
+        let calc = &self.calc;
+        self.cache.entry(*n).or_insert_with(|| calc(*n))
     }
 }
 
-/// RefCacher Struct that allows provision of a closure and 
+/// RefCacher Struct that allows provision of a closure and
 /// memoizes its output using references for its input values
 /// # Examples
 /// ```
@@ -51,27 +52,28 @@ where
 //               since they are very similar
 pub struct RefCacher<'a, I, O, T>
 where
-    T: Fn(&'a I) -> O
+    T: Fn(&'a I) -> O,
 {
     calc: T,
-    cache: HashMap<&'a I, O>
+    cache: HashMap<&'a I, O>,
 }
 
-impl<'a, I: Eq + Hash, O, T> RefCacher<'a, I, O, T> 
+impl<'a, I: Eq + Hash, O, T> RefCacher<'a, I, O, T>
 where
-    T: Fn(&'a I) -> O
+    T: Fn(&'a I) -> O,
 {
     /// Creates new RefCacher instance
     pub fn new(calc: T) -> RefCacher<'a, I, O, T> {
         RefCacher {
             calc,
-            cache: HashMap::new()
+            cache: HashMap::new(),
         }
     }
 
     /// Get reference to value by applying the cacher provided closure
     pub fn get(&mut self, n: &'a I) -> &O {
-        self.cache.entry(n).or_insert((self.calc)(n))
+        let calc = &self.calc;
+        self.cache.entry(n).or_insert_with(|| calc(n))
     }
 }
 
