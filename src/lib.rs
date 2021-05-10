@@ -12,18 +12,12 @@ use std::hash::Hash;
 /// let mut cacher = Cacher::new(|x| x + 1);
 /// assert_eq!(cacher.get(&1), &2);
 /// ```
-pub struct Cacher<I, O, T>
-where
-    T: Fn(I) -> O,
-{
+pub struct Cacher<I, O, T> {
     calc: T,
     cache: HashMap<I, O>,
 }
 
-impl<I: Eq + Hash + Copy, O, T> Cacher<I, O, T>
-where
-    T: Fn(I) -> O,
-{
+impl<I, O, T> Cacher<I, O, T> {
     /// Creates new Cacher instance
     pub fn new(calc: T) -> Cacher<I, O, T> {
         Cacher {
@@ -31,7 +25,13 @@ where
             cache: HashMap::new(),
         }
     }
+}
 
+impl<I, O, T> Cacher<I, O, T>
+where
+    I: Eq + Hash + Copy,
+    T: Fn(I) -> O,
+{
     /// Get reference value by applying the cacher provided closure
     pub fn get(&mut self, n: &I) -> &O {
         let calc = &self.calc;
@@ -50,10 +50,7 @@ where
 
 // TODO(khalil): Is there a better way to reabstracted both caching structures
 //               since they are very similar
-pub struct RefCacher<'a, I, O, T>
-where
-    T: Fn(&'a I) -> O,
-{
+pub struct RefCacher<'a, I, O, T> {
     calc: T,
     cache: HashMap<&'a I, O>,
 }
